@@ -1,0 +1,17 @@
+# ==== Backend ====
+backend/venv/
+backend/__pycache__/
+backend/models/
+backend/data/
+
+# ==== Frontend ====
+frontend/node_modules/
+frontend/.next/
+frontend/dist/
+
+# ==== Environment files ====
+.env
+
+# ==== System files ====
+.DS_Store
+Thumbs.db

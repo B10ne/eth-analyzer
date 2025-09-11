@@ -1,0 +1,10 @@
+pandas
+numpy
+scikit-learn
+tensorflow
+prophet
+yfinance
+fastapi
+uvicorn
+joblib
+plotly
