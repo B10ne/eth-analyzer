@@ -1,15 +1,30 @@
+// frontend/src/components/layout/Sidebar.tsx
 import { NavLink } from 'react-router-dom';
 import { BarChart3, TrendingUp, Settings, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const navigation = [
-  { name: 'Dashboard', href: '/', icon: Home },
-  { name: 'Predictions', href: '/predictions', icon: TrendingUp },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Settings', href: '/settings', icon: Settings },
-];
+import { useDashboardData } from '@/hooks/useDashboardData';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function Sidebar() {
+  const { data, loading, error } = useDashboardData();
+  const ethPrice = data?.live_price?.price;
+  const changePercent = data?.live_price?.change_percent;
+  const { isLoggedIn } = useAuth();
+
+  // Daftar navigasi dasar yang selalu ada
+  let navigation = [
+    { name: 'Dashboard', href: '/', icon: Home },
+    { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+  ];
+
+  // Tambahkan link Predictions jika pengguna sudah login
+  if (isLoggedIn) {
+    navigation.push({ name: 'Predictions', href: '/predictions', icon: TrendingUp });
+  }
+
+  // Tambahkan link Settings di bagian akhir
+  navigation.push({ name: 'Settings', href: '/settings', icon: Settings });
+
   return (
     <div className="flex h-full w-64 flex-col bg-card border-r border-border">
       {/* Logo */}
@@ -50,8 +65,14 @@ export function Sidebar() {
         <div className="text-xs text-muted-foreground">
           <p>ETH Live Price</p>
           <div className="mt-1 flex items-center space-x-1">
-            <span className="text-lg font-semibold text-foreground">$2,456.78</span>
-            <span className="text-success">+3.45%</span>
+            <span className="text-lg font-semibold text-foreground">
+              {loading ? 'Loading...' : `$${ethPrice?.toLocaleString(undefined, { maximumFractionDigits: 2 })}`}
+            </span>
+            {changePercent !== undefined && (
+              <span className={`text-xs font-medium ${changePercent >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                {changePercent.toFixed(2)}%
+              </span>
+            )}
           </div>
         </div>
       </div>

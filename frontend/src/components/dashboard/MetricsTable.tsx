@@ -1,10 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { ModelMetrics } from '@/data/dummyData';
+import { ModelMetric } from '@/types/api';
 
 interface MetricsTableProps {
-  metrics: ModelMetrics[];
+  // Gunakan tipe ModelMetric yang baru diimpor
+  metrics: ModelMetric[];
   bestModel: string;
 }
 
@@ -38,7 +39,7 @@ export function MetricsTable({ metrics, bestModel }: MetricsTableProps) {
                 </TableCell>
                 <TableCell>{metric.mae.toFixed(2)}</TableCell>
                 <TableCell className="font-medium">{metric.rmse.toFixed(2)}</TableCell>
-                <TableCell>{metric.mse.toFixed(2)}</TableCell>
+                <TableCell>{metric.rmse.toFixed(2)}</TableCell>
                 <TableCell>{metric.mape.toFixed(2)}%</TableCell>
               </TableRow>
             ))}

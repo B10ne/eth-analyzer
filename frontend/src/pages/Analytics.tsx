@@ -12,7 +12,7 @@ export default function Dashboard() {
   
   useEffect(() => {
     // Mengubah judul halaman browser
-    document.title = 'Dashboard | EthAnalyzer';
+    document.title = 'Analytics | EthAnalyzer';
   }, []);
   
   const { data, loading, error } = useDashboardData();
@@ -111,6 +111,29 @@ export default function Dashboard() {
           />
         </CardContent>
       </Card>
+
+          {/* Bottom Grid yang Dirapikan */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Kolom Kiri: Risk Analysis & Technical Indicators */}
+        <div className="space-y-6">
+          <RiskAnalysisCard
+            level={risk_analysis.level}
+            factors={risk_analysis.factors}
+          />
+          <TechnicalIndicators
+            indicators={technical_indicators}
+            currentPrice={live_price.price}
+          />
+        </div>
+
+        {/* Kolom Kanan: Metrics Table */}
+        <div>
+          <MetricsTable
+            metrics={model_metrics}
+            bestModel={best_model_info.name}
+          />
+        </div>
+      </div>
     </div>
   );
 }
