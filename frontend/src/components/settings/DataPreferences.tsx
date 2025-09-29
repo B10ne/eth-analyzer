@@ -1,21 +1,27 @@
+// frontend/src/components/settings/DataPreferences.tsx
+import { useState } from 'react'; // <-- WAJIB: Import useState
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export function DataPreferences() {
+  // 1. Definisikan state awal
+  const [selectedCurrency, setSelectedCurrency] = useState('USD');
+  const [refreshInterval, setRefreshInterval] = useState('5min');
+  const [defaultChartView, setDefaultChartView] = useState('6M');
+  
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Data Preferences</CardTitle>
-        <CardDescription>
-          Customize how data is displayed.
-        </CardDescription>
-      </CardHeader>
+      {/* ... (CardHeader) ... */}
       <CardContent className="space-y-6">
         {/* Currency */}
         <div className="space-y-2">
           <Label>Currency</Label>
-          <Select defaultValue="USD">
+          {/* Hubungkan state dan handler */}
+          <Select 
+            value={selectedCurrency} // <-- Gunakan state sebagai value
+            onValueChange={setSelectedCurrency} // <-- Update state saat select berubah
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select currency" />
             </SelectTrigger>
@@ -30,7 +36,11 @@ export function DataPreferences() {
         {/* Data Refresh Interval */}
         <div className="space-y-2">
           <Label>Data Refresh Interval</Label>
-          <Select defaultValue="5min">
+          {/* Hubungkan state dan handler */}
+          <Select 
+            value={refreshInterval} 
+            onValueChange={setRefreshInterval} 
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select refresh interval" />
             </SelectTrigger>
@@ -46,7 +56,11 @@ export function DataPreferences() {
         {/* Default Chart View */}
         <div className="space-y-2">
           <Label>Default Chart View</Label>
-          <Select defaultValue="6M">
+          {/* Hubungkan state dan handler */}
+          <Select 
+            value={defaultChartView} 
+            onValueChange={setDefaultChartView} 
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select default view" />
             </SelectTrigger>

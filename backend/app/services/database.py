@@ -1,9 +1,10 @@
-# backend/app/services/database.py
-import mysql.connector
-import os # <-- Tambahkan ini
+# backend/app/services/database.py (Kembali ke MySQL/TiDB)
+import mysql.connector # KEMBALIKAN: Menggunakan driver MySQL
+import os 
 
 def get_db_connection():
     try:
+        # KEMBALIKAN: Menggunakan parameter koneksi terpisah (HOST, USER, PASSWORD)
         conn = mysql.connector.connect(
             host=os.environ.get("MYSQL_HOST"),      # Ambil dari variabel lingkungan
             user=os.environ.get("MYSQL_USER"),      # Ambil dari variabel lingkungan

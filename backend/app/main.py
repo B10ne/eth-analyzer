@@ -9,8 +9,7 @@ app = FastAPI(title="ETH Analyzer API")
 
 # Izinkan frontend mengakses API ini
 origins = [
-    "http://localhost:8080",      # Alamat local Vite dev server
-    "http://192.168.1.6:8080",   # Alamat network Vite dev server
+    "https://viqi-eth.my.id",
 ]
 
 app.add_middleware(
