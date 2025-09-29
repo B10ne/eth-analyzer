@@ -9,7 +9,10 @@ app = FastAPI(title="ETH Analyzer API")
 
 # Izinkan frontend mengakses API ini
 origins = [
-    "https://viqi-eth.my.id",
+    "http://localhost:8080",       
+    "http://192.168.1.6:8080",
+    # TAMBAHKAN DOMAIN VERCEL ANDA:
+    "https://eth-analyzer-sbgu.vercel.app",
 ]
 
 app.add_middleware(
