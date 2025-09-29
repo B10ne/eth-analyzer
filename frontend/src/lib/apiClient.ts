@@ -1,6 +1,6 @@
 import { DashboardData, ChartUpdateDataPoint } from '@/types/api';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://vioj-eth.my.id"; 
+const BASE_URL = ""; 
 
 /**
  * Mengambil semua data yang dibutuhkan untuk halaman dashboard utama.
