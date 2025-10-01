@@ -1,16 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # PERBAIKAN: Impor router dari endpoint.py dan berikan alias
-from .api.endpoint import router as endpoint_router
-# PERBAIKAN: Impor router dari auth.py dan berikan alias
-from .api.auth import router as auth_router
+from app.api.endpoint import router as endpoint_router
+from app.api.auth import router as auth_router
 
 app = FastAPI(title="ETH Analyzer API")
 
 # Izinkan frontend mengakses API ini
 origins = [
-    "https://vioj-eth.my.id", 
-    "http://vioj-eth.my.id",
+    "https://viqiwebsite.my.id", 
+    "http://viqiwebsite.my.id",
     
     "http://localhost:8080",      
     "http://192.168.1.6:8080",
@@ -30,6 +29,4 @@ app.include_router(auth_router, prefix="/api/auth")
 
 @app.get("/")
 def read_root():
-    return {"status": "API is running"}
-
-# Karakter '}' yang salah di baris terakhir telah dihapus
+    return {"status": "API is running"} # Baris 32 ada di sini
