@@ -12,8 +12,8 @@ app = FastAPI(title="ETH Analyzer API")
 
 # Izinkan frontend mengakses API ini
 origins = [
-    "https://vioj-eth.my.id", 
-    "http://vioj-eth.my.id",
+    "https://viqiwebsite.my.id", 
+    "http://viqiwebsite.my.id",
     
     "http://localhost:8080",      
     "http://192.168.1.6:8080",

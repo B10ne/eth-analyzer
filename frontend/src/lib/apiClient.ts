@@ -1,6 +1,6 @@
 import { DashboardData, ChartUpdateDataPoint } from '@/types/api';
 
-const BASE_URL = "http://vioj-eth.my.id"; 
+const BASE_URL = "http://viqiwebsite.my.id"; 
 
 /**
  * Mengambil semua data yang dibutuhkan untuk halaman dashboard utama.
