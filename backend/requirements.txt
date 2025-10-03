@@ -6,6 +6,7 @@ prophet
 yfinance
 fastapi
 uvicorn
+gunicorn
 joblib
 plotly
 mysql-connector-python
