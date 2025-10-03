@@ -1,12 +1,12 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PriceChart } from '@/components/charts/PriceChart';
-import { RiskAnalysisCard } from '@/components/dashboard/RiskAnalysisCard';
-import { MetricsTable } from '@/components/dashboard/MetricsTable';
-import { TechnicalIndicators } from '@/components/predictions/TechnicalIndicators';
-import { useDashboardData } from '@/hooks/useDashboardData';
-import { TimeframeSelector, Timeframe } from '@/components/dashboard/TimeframeSelector';
-import { DataPoint } from '@/types/api';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { PriceChart } from '../components/charts/PriceChart';
+import { RiskAnalysisCard } from '../components/dashboard/RiskAnalysisCard';
+import { MetricsTable } from '../components/dashboard/MetricsTable';
+import { TechnicalIndicators } from '../components/predictions/TechnicalIndicators';
+import { useDashboardData } from '../hooks/useDashboardData';
+import { TimeframeSelector, Timeframe } from '../components/dashboard/TimeframeSelector';
+import { DataPoint } from '../types/api';
 
 export default function Dashboard() {
   
