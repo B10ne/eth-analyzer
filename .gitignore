@@ -15,3 +15,8 @@ frontend/dist/
 # ==== System files ====
 .DS_Store
 Thumbs.db
+
+# Archives & Model Data
+*.7z
+*.zip
+*.rar
