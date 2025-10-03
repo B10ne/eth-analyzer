@@ -1,6 +1,6 @@
 import { DashboardData, ChartUpdateDataPoint } from '@/types/api';
 
-const BASE_URL = ""; 
+const BASE_URL = "http://127.0.0.1:8000"; 
 
 /**
  * Mengambil semua data yang dibutuhkan untuk halaman dashboard utama.
