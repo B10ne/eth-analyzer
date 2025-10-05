@@ -10,7 +10,7 @@ def get_main_dashboard_data():
     """
     try:
         # Panggil API CoinGecko untuk data historis (misal, 5 tahun terakhir untuk "ALL")
-        hist_url = "https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=1825&interval=daily"
+        hist_url = "[https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=1825&interval=daily](https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=1825&interval=daily)"
         hist_response = requests.get(hist_url, timeout=10) # Tambahkan timeout
         hist_response.raise_for_status()
         hist_json = hist_response.json()
@@ -24,7 +24,7 @@ def get_main_dashboard_data():
         hist_df['Date'] = pd.to_datetime(hist_df['timestamp'], unit='ms')
 
         # Panggil API CoinGecko untuk data live (harga, perubahan, market cap, volume)
-        live_url = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true"
+        live_url = "[https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true](https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true)"
         live_response = requests.get(live_url, timeout=10) # Tambahkan timeout
         live_response.raise_for_status()
         live_json = live_response.json().get('ethereum', {})
@@ -112,23 +112,22 @@ def generate_risk_analysis(hist_df: pd.DataFrame):
     return {"level": level, "factors": factors}
 ```
 
-### Rencana Aksi (Langkah Selanjutnya)
+### Rencana Aksi (Langkah Terakhir)
 
-1.  **Perbarui Kode Lokal**: Ganti seluruh isi file `backend/app/services/eth_price_service.py` di komputer lokal Anda dengan kode baru di atas.
+1.  **Perbarui Kode Lokal**: Ganti **seluruh isi** file `backend/app/services/eth_price_service.py` di komputer lokal Anda dengan kode bersih di atas. Pastikan tidak ada karakter aneh yang ikut tersalin.
 2.  **Commit dan Push ke GitHub**:
     ```bash
     git add backend/app/services/eth_price_service.py
-    git commit -m "Feat: Refactor all data fetching to CoinGecko for reliability"
+    git commit -m "Fix: Remove syntax error from eth_price_service.py"
     git push origin main
     ```
 3.  **Update dan Restart Server VPS**:
     * Hubungkan ke VPS Anda.
     * Jalankan `git pull origin main`.
     * Jalankan `sudo systemctl restart eth_analyzer.service`.
-4.  **Periksa Log Secara Real-time**:
-    * Buka terminal kedua ke VPS Anda.
-    * Jalankan perintah ini untuk melihat log secara langsung:
+4.  **Periksa Status**:
+    * Tunggu sekitar 5 detik, lalu jalankan:
         ```bash
-        sudo journalctl -u eth_analyzer.service -f
+        sudo systemctl status eth_analyzer.service
         
 
