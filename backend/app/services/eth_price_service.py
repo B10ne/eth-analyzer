@@ -1,4 +1,3 @@
-import yfinance as yf
 import pandas as pd
 import numpy as np
 import requests
@@ -6,34 +5,38 @@ from datetime import datetime
 
 def get_main_dashboard_data():
     """
-    PERBAIKAN: Mengambil data harga live dan historis dari CoinGecko, 
-    bukan yfinance, untuk menghindari blokir dari server.
+    PERBAIKAN FINAL: Mengambil SEMUA data (live dan historis) dari CoinGecko 
+    untuk memastikan keandalan di server VPS.
     """
     try:
-        # Panggil API CoinGecko untuk data historis (misal, 1 tahun terakhir)
-        hist_url = "https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=365&interval=daily"
-        hist_response = requests.get(hist_url)
+        # Panggil API CoinGecko untuk data historis (misal, 5 tahun terakhir untuk "ALL")
+        hist_url = "https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=1825&interval=daily"
+        hist_response = requests.get(hist_url, timeout=10) # Tambahkan timeout
         hist_response.raise_for_status()
         hist_json = hist_response.json()
 
         # Ubah data historis menjadi DataFrame pandas
-        prices = hist_json['prices']
+        prices = hist_json.get('prices', [])
+        if not prices:
+            raise ValueError("Data harga historis tidak ditemukan dalam respons CoinGecko")
+            
         hist_df = pd.DataFrame(prices, columns=['timestamp', 'Close'])
         hist_df['Date'] = pd.to_datetime(hist_df['timestamp'], unit='ms')
 
         # Panggil API CoinGecko untuk data live (harga, perubahan, market cap, volume)
         live_url = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true"
-        live_response = requests.get(live_url)
+        live_response = requests.get(live_url, timeout=10) # Tambahkan timeout
         live_response.raise_for_status()
         live_json = live_response.json().get('ethereum', {})
 
-        # Ambil data terbaru dari historis untuk menghitung perubahan harian jika tidak tersedia di live data
-        latest = hist_df.iloc[-1]
-        previous = hist_df.iloc[-2]
+        # Gunakan data live dari CoinGecko
+        price_now = live_json.get('usd')
+        change_percent = live_json.get('usd_24h_change')
         
-        # Gunakan perubahan 24 jam dari CoinGecko jika tersedia, jika tidak hitung manual
-        change_percent = live_json.get('usd_24h_change', 0)
-        price_now = live_json.get('usd', latest['Close'])
+        # Pastikan data tidak None sebelum melakukan kalkulasi
+        if price_now is None or change_percent is None:
+            raise ValueError("Data harga live atau perubahan tidak ditemukan dalam respons CoinGecko")
+
         change_absolute = price_now * (change_percent / 100)
 
         live_price = {
@@ -50,22 +53,19 @@ def get_main_dashboard_data():
         
         return live_price, historical_data, hist_df
 
+    except requests.exceptions.RequestException as e:
+        print(f"Error Jaringan saat mengambil data dari CoinGecko: {e}")
+        return {}, [], pd.DataFrame()
     except Exception as e:
-        print(f"Error in get_main_dashboard_data (CoinGecko): {e}")
-        # Kembalikan struktur kosong jika gagal
+        print(f"Error di get_main_dashboard_data (CoinGecko): {e}")
         return {}, [], pd.DataFrame()
 
-# Fungsi get_live_market_data() sekarang tidak diperlukan karena datanya sudah digabung di atas.
-# Kita bisa membiarkannya atau menghapusnya. Untuk saat ini, kita biarkan saja.
+# Fungsi ini tidak lagi digunakan secara aktif oleh endpoint utama, tetapi kita biarkan saja
 def get_live_market_data():
     return {}
 
-
 def calculate_technical_indicators(hist_df: pd.DataFrame):
-    if hist_df.empty: return {"rsi": 0, "macd": 0, "sma50": 0, "sma200": 0, "sentiment": "Unknown"}
-    
-    # Pastikan data cukup untuk kalkulasi
-    if len(hist_df) < 200:
+    if hist_df.empty or len(hist_df) < 200:
         return {"rsi": "N/A", "macd": "N/A", "sma50": "N/A", "sma200": "N/A", "sentiment": "Insufficient Data"}
 
     sma50 = hist_df['Close'].rolling(window=50).mean().iloc[-1]
@@ -75,12 +75,11 @@ def calculate_technical_indicators(hist_df: pd.DataFrame):
     gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
     loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
     
-    # Hindari pembagian dengan nol
-    if loss.iloc[-1] == 0:
+    if pd.isna(loss.iloc[-1]) or loss.iloc[-1] == 0:
         rsi = 100
     else:
-        rs = gain / loss
-        rsi = 100 - (100 / (1 + rs)).iloc[-1]
+        rs = gain.iloc[-1] / loss.iloc[-1]
+        rsi = 100 - (100 / (1 + rs))
 
     exp12 = hist_df['Close'].ewm(span=12, adjust=False).mean()
     exp26 = hist_df['Close'].ewm(span=26, adjust=False).mean()
@@ -93,10 +92,14 @@ def calculate_technical_indicators(hist_df: pd.DataFrame):
     return {"rsi": rsi, "macd": macd, "sma50": sma50, "sma200": sma200, "sentiment": sentiment}
 
 def generate_risk_analysis(hist_df: pd.DataFrame):
-    if hist_df.empty or len(hist_df) < 30: return {"level": "Unknown", "factors": ["Insufficient data."]}
+    if hist_df.empty or len(hist_df) < 30: 
+        return {"level": "Unknown", "factors": ["Insufficient data."]}
     
     volatility = hist_df['Close'].tail(30).pct_change().std() * np.sqrt(365)
     
+    if pd.isna(volatility):
+        return {"level": "Unknown", "factors": ["Could not calculate volatility."]}
+
     level = "Low"
     if volatility > 0.8: level = "Medium"
     if volatility > 1.2: level = "High"
@@ -107,4 +110,25 @@ def generate_risk_analysis(hist_df: pd.DataFrame):
     else: factors.append("Low volatility suggests price stability.")
     
     return {"level": level, "factors": factors}
+```
+
+### Rencana Aksi (Langkah Selanjutnya)
+
+1.  **Perbarui Kode Lokal**: Ganti seluruh isi file `backend/app/services/eth_price_service.py` di komputer lokal Anda dengan kode baru di atas.
+2.  **Commit dan Push ke GitHub**:
+    ```bash
+    git add backend/app/services/eth_price_service.py
+    git commit -m "Feat: Refactor all data fetching to CoinGecko for reliability"
+    git push origin main
+    ```
+3.  **Update dan Restart Server VPS**:
+    * Hubungkan ke VPS Anda.
+    * Jalankan `git pull origin main`.
+    * Jalankan `sudo systemctl restart eth_analyzer.service`.
+4.  **Periksa Log Secara Real-time**:
+    * Buka terminal kedua ke VPS Anda.
+    * Jalankan perintah ini untuk melihat log secara langsung:
+        ```bash
+        sudo journalctl -u eth_analyzer.service -f
+        
 
