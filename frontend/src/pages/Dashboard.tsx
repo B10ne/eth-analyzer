@@ -1,24 +1,25 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { PriceChart } from '../components/charts/PriceChart';
+import { RiskAnalysisCard } from '../components/dashboard/RiskAnalysisCard';
+import { MetricsTable } from '../components/dashboard/MetricsTable';
+import { TechnicalIndicators } from '../components/predictions/TechnicalIndicators';
 import { useDashboardData } from '../hooks/useDashboardData';
 import { TimeframeSelector, Timeframe } from '../components/dashboard/TimeframeSelector';
+import { DataPoint } from '../types/api';
 
 export default function Dashboard() {
   
   useEffect(() => {
-    // Mengubah judul halaman browser saat komponen dimuat
+    // Mengubah judul halaman browser
     document.title = 'Dashboard | EthAnalyzer';
   }, []);
   
-  // Mengambil data menggunakan custom hook
   const { data, loading, error } = useDashboardData();
   const [selectedTimeframe, setSelectedTimeframe] = useState<Timeframe>('6M');
 
   const filteredHistoricalData = useMemo(() => {
-    // Jika data belum ada, kembalikan array kosong
     if (!data) return [];
-    
     const now = new Date();
     let startDate = new Date();
 
@@ -42,21 +43,12 @@ export default function Dashboard() {
     return data.historical_data.filter(d => new Date(d.date) >= startDate);
   }, [data, selectedTimeframe]);
 
-  // ==================================================================
-  // KUNCI PERBAIKAN: Menangani state sebelum data siap untuk ditampilkan
-  // ==================================================================
-  
-  // 1. Tampilkan pesan saat data sedang dimuat
-  if (loading) return <div className="flex items-center justify-center h-screen">Loading dashboard data...</div>;
-  
-  // 2. Tampilkan pesan jika terjadi error saat fetch data
-  if (error) return <div className="p-6 text-red-500">Error fetching data: {error}</div>;
-  
-  // 3. Jangan render apapun jika data tidak ada (pengaman terakhir)
+  // Tampilkan pesan saat loading atau error
+  if (loading) return <div className="p-6">Loading...</div>;
+  if (error) return <div className="p-6 text-red-500">Error: {error}</div>;
   if (!data) return null;
 
-  // Destructuring data dilakukan SETELAH pengecekan di atas, jadi dijamin aman
-  const { live_price, best_model_info } = data;
+  const { live_price, historical_data, risk_analysis, model_metrics, best_model_info, technical_indicators } = data;
   const isPositiveChange = live_price.change_percent >= 0;
 
   return (
@@ -79,8 +71,7 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium">Market Cap</CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Menggunakan fallback "N/A" jika data tidak ada */}
-            <div className="text-2xl font-bold">{live_price.market_cap ? live_price.market_cap.toLocaleString() : "N/A"}</div>
+            <div className="text-2xl font-bold">{live_price.market_cap || "N/A"}</div>
             <p className="text-xs text-muted-foreground">in USD</p>
           </CardContent>
         </Card>
@@ -89,7 +80,7 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium">24h Volume</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{live_price.volume_24h ? live_price.volume_24h.toLocaleString() : "N/A"}</div>
+            <div className="text-2xl font-bold">{live_price.volume_24h || "N/A"}</div>
             <p className="text-xs text-muted-foreground">in USD</p>
           </CardContent>
         </Card>
