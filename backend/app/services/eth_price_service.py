@@ -110,24 +110,4 @@ def generate_risk_analysis(hist_df: pd.DataFrame):
     else: factors.append("Low volatility suggests price stability.")
     
     return {"level": level, "factors": factors}
-```
-
-### Rencana Aksi (Langkah Terakhir)
-
-1.  **Perbarui Kode Lokal**: Ganti **seluruh isi** file `backend/app/services/eth_price_service.py` di komputer lokal Anda dengan kode bersih di atas. Pastikan tidak ada karakter aneh yang ikut tersalin.
-2.  **Commit dan Push ke GitHub**:
-    ```bash
-    git add backend/app/services/eth_price_service.py
-    git commit -m "Fix: Remove syntax error from eth_price_service.py"
-    git push origin main
-    ```
-3.  **Update dan Restart Server VPS**:
-    * Hubungkan ke VPS Anda.
-    * Jalankan `git pull origin main`.
-    * Jalankan `sudo systemctl restart eth_analyzer.service`.
-4.  **Periksa Status**:
-    * Tunggu sekitar 5 detik, lalu jalankan:
-        ```bash
-        sudo systemctl status eth_analyzer.service
-        
 
